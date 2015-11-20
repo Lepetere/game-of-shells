@@ -98,22 +98,33 @@ var ACTION_BUTTON_SELECTOR = '.action-button',
 
 APP.STATE_ACTIONS = {
   welcomeAction: function () {
+    console.log("welcome");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.welcome);
     $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.welcome);
   },
 
   showballAction: function () {
+    console.log("showball");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.showball);
     $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.showball);
     APP.UI.initBallPosition();
   },
 
+  hideballAction: function (transitionToNextState) {
+    console.log("hideball");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty();
+    $(ACTION_BUTTON_SELECTOR).hide();
+    $('.ball-container').fadeOut(1000, transitionToNextState);
+  },
+
   shuffleAction: function () {
     console.log("shuffle");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
   },
 
   guessAction: function () {
     console.log("guess");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
   },
 
   guesswaswrongAction: function () {
@@ -121,6 +132,7 @@ APP.STATE_ACTIONS = {
   },
 
   guesswasrightAction: function () {
+    $(ACTION_BUTTON_SELECTOR).show();
     console.log("guesswasright");
   },
 
@@ -135,7 +147,7 @@ var APP = APP || {};
 APP.STATE_MACHINE = (function () {
 
   // 'constants'
-  var STATES = ['WELCOME', 'SHOWBALL', 'SHUFFLE', 'GUESS', 'GUESSWASWRONG', 'GUESSWASRIGHT', 'PLAYAGAIN'];
+  var STATES = ['WELCOME', 'SHOWBALL', 'HIDEBALL', 'SHUFFLE', 'GUESS', 'GUESSWASWRONG', 'GUESSWASRIGHT', 'PLAYAGAIN'];
 
   var currentState;
 
@@ -147,7 +159,7 @@ APP.STATE_MACHINE = (function () {
   function transitionToNextState () {
     var newState;
     if (currentState == STATES[STATES.length - 1]) {
-      newState = STATES[0];
+      newState = STATES[1];
     }
     else {
       STATES.forEach(function (state, stateIndex) {
@@ -166,7 +178,7 @@ APP.STATE_MACHINE = (function () {
       throw new Error("callStateAction must be called with a string as argument");
     }
     else {
-      APP.STATE_ACTIONS[state.toLowerCase() + "Action"]();
+      APP.STATE_ACTIONS[state.toLowerCase() + "Action"](transitionToNextState);
     }
   }
 
@@ -187,7 +199,9 @@ APP.TRANSLATIONS = {
   "en": {
     "instructions": {
       "welcome": "Welcome to the Game of Shells!",
-      "showball": "Do you see the red ball? Pay attention where it's hidden!"
+      "showball": "Do you see the red ball? Pay attention where it's hidden!",
+      "shuffle": "Shuffling...",
+      "guess": "Can you guess where the ball is?"
     },
     "buttonlabels": {
       "welcome": "Start the game!",

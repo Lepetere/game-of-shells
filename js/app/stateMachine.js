@@ -3,7 +3,7 @@ var APP = APP || {};
 APP.STATE_MACHINE = (function () {
 
   // 'constants'
-  var STATES = ['WELCOME', 'SHOWBALL', 'SHUFFLE', 'GUESS', 'GUESSWASWRONG', 'GUESSWASRIGHT', 'PLAYAGAIN'];
+  var STATES = ['WELCOME', 'SHOWBALL', 'HIDEBALL', 'SHUFFLE', 'GUESS', 'GUESSWASWRONG', 'GUESSWASRIGHT', 'PLAYAGAIN'];
 
   var currentState;
 
@@ -15,7 +15,7 @@ APP.STATE_MACHINE = (function () {
   function transitionToNextState () {
     var newState;
     if (currentState == STATES[STATES.length - 1]) {
-      newState = STATES[0];
+      newState = STATES[1];
     }
     else {
       STATES.forEach(function (state, stateIndex) {
@@ -34,7 +34,7 @@ APP.STATE_MACHINE = (function () {
       throw new Error("callStateAction must be called with a string as argument");
     }
     else {
-      APP.STATE_ACTIONS[state.toLowerCase() + "Action"]();
+      APP.STATE_ACTIONS[state.toLowerCase() + "Action"](transitionToNextState);
     }
   }
 
