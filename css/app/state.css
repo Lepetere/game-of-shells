@@ -3,3 +3,11 @@
 .clickable {
   cursor: pointer;
 }
+
+.under-shell {
+  z-index: 500;
+}
+
+.over-shell {
+  z-index: 1500;
+}

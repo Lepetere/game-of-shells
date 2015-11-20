@@ -2,13 +2,15 @@ var APP = APP || {};
 
 APP.UI = (function () {
 
-  // 'constants' // element dimensions in pixels
+  // 'constants'
   var SHELL_WIDTH = 150,
     SHELL_HEIGHT = 150,
-    SHELL_MARGIN = 10;
+    SHELL_MARGIN = 10,
+    GAME_CONTAINER_SELECTOR = '#game-container';
 
   // array that will hold the positions of the three shell containers in the grid
-  var shellPositions = [];
+  var shellPositions = [],
+    ballPosition;
 
   // array that holds objects with top and left positions for a 3*3 square grid of shell containers
   var gridPositions = (function () {
@@ -26,11 +28,12 @@ APP.UI = (function () {
 
   var init = function () {
     initShellPositions();
+    initBallPosition();
   };
 
   // adds 3 shell containers at random grid positions and saves the positions
   function initShellPositions () {
-    $('#game-container').empty();
+    $(GAME_CONTAINER_SELECTOR).empty();
 
     for ( var shellNumber = 1; shellNumber <= 3; shellNumber ++ ) {
       // find random position that is not taken yet
@@ -50,7 +53,23 @@ APP.UI = (function () {
 
       var shellElement = $('<div id="shell-' + shellNumber + '" class="shell"></div>');
       $(shellElement).offset(gridPositions[shellPositions[shellNumber - 1] - 1]);
-      $('#game-container').append(shellElement);
+      $(GAME_CONTAINER_SELECTOR).append(shellElement);
+    }
+  }
+
+  function initBallPosition () {
+    if (shellPositions.length != 3) {
+      throw new Error("Can't init ball position without first initializing the shell positions");
+    }
+    else {
+      // choose one of shell grid positions and place the ball at the same position
+      ballPosition = shellPositions[Math.floor(Math.random() * 3)];
+      var ballElement = $('<div id="ball-container" class="ball-container"></div');
+      ballElement.offset(gridPositions[ballPosition - 1]);
+      ballElement.append('<div id="ball" class="ball"></div>');
+      ballElement.addClass('over-shell');
+
+      $(GAME_CONTAINER_SELECTOR).append(ballElement);
     }
   }
 	

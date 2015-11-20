@@ -23,17 +23,17 @@ body {
   width: 150px;
   height: 150px;
   background: blue;
+  z-index: 1000;
 }
 
 .ball-container {
-  display: inline-block;
-  float: left;
-  width: 150px;
-  height: 150px;
+  position: absolute;
+  width: 120px;
+  height: 120px;
+  padding: 15px;
 }
 
 .ball {
-  margin: 15px;
   background-color: red;
   width: 120px;
   height: 120px;
@@ -71,4 +71,12 @@ body {
 
 .clickable {
   cursor: pointer;
+}
+
+.under-shell {
+  z-index: 500;
+}
+
+.over-shell {
+  z-index: 1500;
 }
