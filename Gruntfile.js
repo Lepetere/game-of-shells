@@ -8,10 +8,14 @@ module.exports = function(grunt) {
       options: {
         separator: ';\n\n',
       },
-      dist: {
+      js: {
         src: 'js/app/*.js',
         dest: 'js/app.js'
       },
+      css: {
+        src: 'css/app/*.css',
+        dest: 'css/app.css'
+      }
     },
 
     connect: {
@@ -33,10 +37,11 @@ module.exports = function(grunt) {
         tasks: 'concat'
       },
       css: {
-        files: 'css/styles.css'
+        files: 'css/app/*.css',
+        tasks: 'concat'
       },
       html: {
-          files: [ 'index.html']
+          files: [ 'index.html' ]
       }
     }
   });

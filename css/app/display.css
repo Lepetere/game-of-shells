@@ -1,0 +1,26 @@
+/* ---- display rules ---- */
+
+.shell {
+  display: inline-block;
+  float: left;
+  width: 150px;
+  height: 150px;
+  margin-left: 10px;
+  background: blue;
+}
+
+.ball-container {
+  display: inline-block;
+  float: left;
+  width: 150px;
+  height: 150px;
+}
+
+.ball {
+  margin: 15px;
+  background-color: red;
+  width: 120px;
+  height: 120px;
+  -moz-border-radius: 60px;
+  border-radius: 60px;
+}

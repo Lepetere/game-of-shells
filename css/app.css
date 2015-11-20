@@ -1,5 +1,76 @@
-body {
-  padding: 0;
-  margin: 10px;
+/* ---- base rules ---- */
+
+html {
+  padding: 0px;
+  margin: 0px;
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  text-align: center;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  padding: 0px;
+  margin: 0px;
+  position: relative;
+  height: 100%;
+  width: 100%;
+}
+;
+
+/* ---- display rules ---- */
+
+.shell {
+  display: inline-block;
+  float: left;
+  width: 150px;
+  height: 150px;
+  margin-left: 10px;
+  background: blue;
+}
+
+.ball-container {
+  display: inline-block;
+  float: left;
+  width: 150px;
+  height: 150px;
+}
+
+.ball {
+  margin: 15px;
+  background-color: red;
+  width: 120px;
+  height: 120px;
+  -moz-border-radius: 60px;
+  border-radius: 60px;
+}
+;
+
+/* ---- layout rules ---- */
+
+#main-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -300px;
+  margin-left: -400px;
+  height: 600px;
+  width: 800px;
+}
+
+#game-container {
+  height: 400px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#instruction-container {
+  clear: left;
+}
+;
+
+/* ---- state rules ---- */
+
+.clickable {
+  cursor: pointer;
 }

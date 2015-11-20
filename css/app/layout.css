@@ -1,0 +1,21 @@
+/* ---- layout rules ---- */
+
+#main-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -300px;
+  margin-left: -400px;
+  height: 600px;
+  width: 800px;
+}
+
+#game-container {
+  height: 400px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
+#instruction-container {
+  clear: left;
+}

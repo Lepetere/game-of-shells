@@ -7,7 +7,7 @@ var APP = APP || {};
 APP.module1 = (function () {
 
   var init = function () {
-  	$('body').append("<p>I'm some Javascript!</p>");
+  	$('.instruction-text').append("Welcome to the Game of Shells!");
   };
 	
   var function1 = function () {
