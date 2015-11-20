@@ -25,7 +25,5 @@
 }
 
 .action-button {
-  position: relative;
-  top: -2px;
-  margin-left: 14px;
+  cursor: pointer;
 }

@@ -7,7 +7,7 @@ APP.UI = (function () {
     SHELL_HEIGHT = 150,
     SHELL_MARGIN = 10,
     GAME_CONTAINER_SELECTOR = '#game-container',
-    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text';
+    ACTION_BUTTON_SELECTOR = '.action-button';
 
   // array that will hold the positions of the three shell containers in the grid
   var shellPositions = [],
@@ -28,9 +28,8 @@ APP.UI = (function () {
   })();
 
   var init = function () {
-    initInstructions();
+    initButton();
     initShellPositions();
-    initBallPosition();
   };
 
   // adds 3 shell containers at random grid positions and saves the positions
@@ -59,7 +58,7 @@ APP.UI = (function () {
     }
   }
 
-  function initBallPosition () {
+  var initBallPosition = function () {
     if (shellPositions.length != 3) {
       throw new Error("Can't init ball position without first initializing the shell positions");
     }
@@ -75,13 +74,12 @@ APP.UI = (function () {
     }
   }
 	
-  function initInstructions () {
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).append(APP.TRANSLATIONS.en.instructions.welcome);
-    var button = $('<button class="action-button">' + APP.TRANSLATIONS.en.buttonlabels.welcome + '</button>');
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).append(button);
+  function initButton () {
+    $(ACTION_BUTTON_SELECTOR).click(APP.STATE_MACHINE.actionButtonClickHandler);
   };
 	
   var module = {};
   module.init = init;
+  module.initBallPosition = initBallPosition;
   return module;
 })();

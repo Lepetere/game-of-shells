@@ -7,7 +7,7 @@ APP.UI = (function () {
     SHELL_HEIGHT = 150,
     SHELL_MARGIN = 10,
     GAME_CONTAINER_SELECTOR = '#game-container',
-    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text';
+    ACTION_BUTTON_SELECTOR = '.action-button';
 
   // array that will hold the positions of the three shell containers in the grid
   var shellPositions = [],
@@ -28,9 +28,8 @@ APP.UI = (function () {
   })();
 
   var init = function () {
-    initInstructions();
+    initButton();
     initShellPositions();
-    initBallPosition();
   };
 
   // adds 3 shell containers at random grid positions and saves the positions
@@ -59,7 +58,7 @@ APP.UI = (function () {
     }
   }
 
-  function initBallPosition () {
+  var initBallPosition = function () {
     if (shellPositions.length != 3) {
       throw new Error("Can't init ball position without first initializing the shell positions");
     }
@@ -75,21 +74,112 @@ APP.UI = (function () {
     }
   }
 	
-  function initInstructions () {
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).append(APP.TRANSLATIONS.en.instructions.welcome);
-    var button = $('<button class="action-button">' + APP.TRANSLATIONS.en.buttonlabels.welcome + '</button>');
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).append(button);
+  function initButton () {
+    $(ACTION_BUTTON_SELECTOR).click(APP.STATE_MACHINE.actionButtonClickHandler);
   };
 	
   var module = {};
   module.init = init;
+  module.initBallPosition = initBallPosition;
   return module;
 })();
 ;
 
 $(document).ready(function () {
   APP.UI.init();
+  APP.STATE_MACHINE.init();
 });;
+
+var APP = APP || {};
+
+// 'constants'
+var ACTION_BUTTON_SELECTOR = '.action-button',
+    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text';
+
+APP.STATE_ACTIONS = {
+  welcomeAction: function () {
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.welcome);
+    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.welcome);
+  },
+
+  showballAction: function () {
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.showball);
+    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.showball);
+    APP.UI.initBallPosition();
+  },
+
+  shuffleAction: function () {
+    console.log("shuffle");
+  },
+
+  guessAction: function () {
+    console.log("guess");
+  },
+
+  guesswaswrongAction: function () {
+    console.log("guesswaswrong");
+  },
+
+  guesswasrightAction: function () {
+    console.log("guesswasright");
+  },
+
+  playagainAction: function () {
+    console.log("playagain");
+  }
+};
+;
+
+var APP = APP || {};
+
+APP.STATE_MACHINE = (function () {
+
+  // 'constants'
+  var STATES = ['WELCOME', 'SHOWBALL', 'SHUFFLE', 'GUESS', 'GUESSWASWRONG', 'GUESSWASRIGHT', 'PLAYAGAIN'];
+
+  var currentState;
+
+  var init = function () {
+    currentState = STATES[0];
+    callStateAction(currentState);
+  }
+
+  function transitionToNextState () {
+    var newState;
+    if (currentState == STATES[STATES.length - 1]) {
+      newState = STATES[0];
+    }
+    else {
+      STATES.forEach(function (state, stateIndex) {
+        if (currentState == state) {
+          newState = STATES[stateIndex + 1];
+        }
+      });
+    }
+
+    currentState = newState;
+    callStateAction(newState);
+  }
+
+  function callStateAction (state) {
+    if (typeof state != "string") {
+      throw new Error("callStateAction must be called with a string as argument");
+    }
+    else {
+      APP.STATE_ACTIONS[state.toLowerCase() + "Action"]();
+    }
+  }
+
+  var actionButtonClickHandler = function () {
+    transitionToNextState();
+  }
+	
+  var module = {};
+  module.init = init;
+  module.actionButtonClickHandler = actionButtonClickHandler;
+  return module;
+})();
+;
 
 var APP = APP || {};
 
@@ -97,11 +187,11 @@ APP.TRANSLATIONS = {
   "en": {
     "instructions": {
       "welcome": "Welcome to the Game of Shells!",
-      "doyouseetheball": "Do you see the red ball? Pay attention where it's hidden!"
+      "showball": "Do you see the red ball? Pay attention where it's hidden!"
     },
     "buttonlabels": {
       "welcome": "Start the game!",
-      "doyouseetheball": "Got it, now shuffle!"
+      "showball": "Got it, now shuffle!"
     }
   }
 };
