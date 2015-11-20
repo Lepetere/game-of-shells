@@ -7,10 +7,13 @@ APP.UI = (function () {
     SHELL_HEIGHT = 150,
     SHELL_MARGIN = 10,
     GAME_CONTAINER_SELECTOR = '#game-container',
-    ACTION_BUTTON_SELECTOR = '.action-button';
+    ACTION_BUTTON_SELECTOR = '.action-button',
+    SHUFFLE_ANIMATION_DURATION = 250,
+    NUMBER_OF_SHUFFLES = 8;
 
   var shellPositions, // array that will hold the positions of the three shell containers in the grid
     shellContainers, // array that will hold references to the shell container DOM elements
+    ballElement, // will hold reference to ball (container) DOM element
     ballPositionIndex, // will hold index of the ball position corresponding to the indices in shellPositions & shellContainers
     ballPosition;
 
@@ -38,10 +41,10 @@ APP.UI = (function () {
     $(GAME_CONTAINER_SELECTOR).empty();
     shellContainers = [];
     shellPositions = [];
-  }
+  };
 
   // adds 3 shell containers at random grid positions and saves the positions
-  initShellPositions = function () {
+  var initShellPositions = function () {
     for ( var shellNumber = 1; shellNumber <= 3; shellNumber ++ ) {
       // find random position that is not taken yet
       var randomPositionToTest, randomPositionAlreadyTaken;
@@ -65,6 +68,42 @@ APP.UI = (function () {
     }
   }
 
+  var shuffleShellPositions = function (transitionToNextState) {
+    (function shuffleOnce (transitionToNextState, counter) {
+      shellPositions.forEach(function (shellPosition, shellPositionIndex) {
+        var newPositionIndex, newPosition;
+        do {
+          newPositionIndex = Math.floor(Math.random() * 9);
+          newPosition = gridPositions[newPositionIndex];
+          randomPositionAlreadyTaken = false;
+          shellPositions.forEach(function (shellPosition) {
+            if (shellPosition.left == newPosition.left && shellPosition.top == newPosition.top) {
+              randomPositionAlreadyTaken = true;
+            }
+          });
+        } while ( randomPositionAlreadyTaken )
+
+        shellPositions[shellPositionIndex] = newPosition;
+        $(shellContainers[shellPositionIndex]).animate(newPosition, {
+          duration: SHUFFLE_ANIMATION_DURATION,
+          complete: function () {
+            // shellPositionIndex == 0 to make sure the callback gets only executed once for every shuffle round
+            if (counter == NUMBER_OF_SHUFFLES && shellPositionIndex == 0) {
+              transitionToNextState();
+            }
+            else if (shellPositionIndex == 0) {
+              shuffleOnce(transitionToNextState, counter + 1);
+            }
+          }
+        });
+        // also shift ball to new position
+        if (shellPositionIndex == ballPositionIndex) {
+          $(ballElement).animate(newPosition, SHUFFLE_ANIMATION_DURATION);
+        }
+      });
+    })(transitionToNextState, 1);
+  };
+
   var makeShellsClickable = function () {
     shellContainers.forEach(function (element, index) {
       var shellNumber = index;
@@ -74,14 +113,14 @@ APP.UI = (function () {
         APP.STATE_MACHINE.shellContainerClickHandler(ballPositionIndex == index);
       });
     });
-  }
+  };
 
   var unassignShellClickHandlers = function () {
     shellContainers.forEach(function (element, index) {
       $(element).removeClass('clickable');
       $(element).off("click");
     });
-  }
+  };
 
   var initBallPosition = function () {
     if (shellPositions.length != 3) {
@@ -91,18 +130,19 @@ APP.UI = (function () {
       // choose one of shell grid positions and place the ball at the same position
       ballPositionIndex = Math.floor(Math.random() * 3);
       ballPosition = shellPositions[ballPositionIndex];
-      var ballElement = $('<div id="ball-container" class="ball-container"></div');
+      ballElement = $('<div id="ball-container" class="ball-container"></div');
       ballElement.offset(gridPositions[ballPosition - 1]);
+      ballElement.hide();
       ballElement.append('<div id="ball" class="ball"></div>');
       ballElement.addClass('over-shell');
 
       $(GAME_CONTAINER_SELECTOR).append(ballElement);
     }
-  }
+  };
 	
   function initButton () {
     $(ACTION_BUTTON_SELECTOR).click(APP.STATE_MACHINE.actionButtonClickHandler);
-  };
+  }
 	
   var module = {};
   module.init = init;
@@ -111,6 +151,7 @@ APP.UI = (function () {
   module.unassignShellClickHandlers = unassignShellClickHandlers;
   module.resetGame = resetGame;
   module.initShellPositions = initShellPositions;
+  module.shuffleShellPositions = shuffleShellPositions;
   return module;
 })();
 ;
@@ -124,7 +165,10 @@ var APP = APP || {};
 
 // 'constants'
 var ACTION_BUTTON_SELECTOR = '.action-button',
-    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text';
+    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text',
+    BALL_CONTAINER_SELECTOR = '.ball-container',
+    BALL_HIDE_DURATION = 800,
+    BALL_SHOW_DURATION = 400;
 
 APP.STATE_ACTIONS = {
   welcomeAction: function () {
@@ -138,19 +182,20 @@ APP.STATE_ACTIONS = {
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.showball);
     $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.showball);
     APP.UI.initBallPosition();
+    $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
   },
 
   hideballAction: function (transitionToNextState) {
     console.log("hideball");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty();
     $(ACTION_BUTTON_SELECTOR).hide();
-    $('.ball-container').fadeOut(1000, transitionToNextState);
+    $(BALL_CONTAINER_SELECTOR).fadeOut(BALL_HIDE_DURATION, transitionToNextState);
   },
 
   shuffleAction: function (transitionToNextState) {
     console.log("shuffle");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
-    window.setTimeout(transitionToNextState, 2000);
+    APP.UI.shuffleShellPositions(transitionToNextState);
   },
 
   guessAction: function () {
@@ -173,7 +218,7 @@ APP.STATE_ACTIONS = {
     console.log("guesswasright");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
     $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.guesswasright);
-    $('.ball-container').fadeIn(400);
+    $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
     $(ACTION_BUTTON_SELECTOR).show();
     APP.UI.unassignShellClickHandlers();
   },

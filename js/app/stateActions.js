@@ -2,7 +2,10 @@ var APP = APP || {};
 
 // 'constants'
 var ACTION_BUTTON_SELECTOR = '.action-button',
-    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text';
+    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text',
+    BALL_CONTAINER_SELECTOR = '.ball-container',
+    BALL_HIDE_DURATION = 800,
+    BALL_SHOW_DURATION = 400;
 
 APP.STATE_ACTIONS = {
   welcomeAction: function () {
@@ -16,19 +19,20 @@ APP.STATE_ACTIONS = {
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.showball);
     $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.showball);
     APP.UI.initBallPosition();
+    $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
   },
 
   hideballAction: function (transitionToNextState) {
     console.log("hideball");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty();
     $(ACTION_BUTTON_SELECTOR).hide();
-    $('.ball-container').fadeOut(1000, transitionToNextState);
+    $(BALL_CONTAINER_SELECTOR).fadeOut(BALL_HIDE_DURATION, transitionToNextState);
   },
 
   shuffleAction: function (transitionToNextState) {
     console.log("shuffle");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
-    window.setTimeout(transitionToNextState, 2000);
+    APP.UI.shuffleShellPositions(transitionToNextState);
   },
 
   guessAction: function () {
@@ -51,7 +55,7 @@ APP.STATE_ACTIONS = {
     console.log("guesswasright");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
     $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.guesswasright);
-    $('.ball-container').fadeIn(400);
+    $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
     $(ACTION_BUTTON_SELECTOR).show();
     APP.UI.unassignShellClickHandlers();
   },
