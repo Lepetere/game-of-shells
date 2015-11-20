@@ -11,6 +11,7 @@ APP.UI = (function () {
 
   var shellPositions, // array that will hold the positions of the three shell containers in the grid
     shellContainers, // array that will hold references to the shell container DOM elements
+    ballPositionIndex, // will hold index of the ball position corresponding to the indices in shellPositions & shellContainers
     ballPosition;
 
   // array that holds objects with top and left positions for a 3*3 square grid of shell containers
@@ -33,14 +34,14 @@ APP.UI = (function () {
     initShellPositions();
   };
 
-  function resetGame () {
+  var resetGame = function () {
     $(GAME_CONTAINER_SELECTOR).empty();
     shellContainers = [];
     shellPositions = [];
   }
 
   // adds 3 shell containers at random grid positions and saves the positions
-  function initShellPositions () {
+  initShellPositions = function () {
     for ( var shellNumber = 1; shellNumber <= 3; shellNumber ++ ) {
       // find random position that is not taken yet
       var randomPositionToTest, randomPositionAlreadyTaken;
@@ -69,7 +70,8 @@ APP.UI = (function () {
       var shellNumber = index;
       $(element).addClass('clickable');
       $(element).click(function () {
-        console.log("shell number " + shellNumber + " was clicked");
+        var wasRightGuess = ballPosition
+        APP.STATE_MACHINE.shellContainerClickHandler(ballPositionIndex == index);
       });
     });
   }
@@ -87,7 +89,8 @@ APP.UI = (function () {
     }
     else {
       // choose one of shell grid positions and place the ball at the same position
-      ballPosition = shellPositions[Math.floor(Math.random() * 3)];
+      ballPositionIndex = Math.floor(Math.random() * 3);
+      ballPosition = shellPositions[ballPositionIndex];
       var ballElement = $('<div id="ball-container" class="ball-container"></div');
       ballElement.offset(gridPositions[ballPosition - 1]);
       ballElement.append('<div id="ball" class="ball"></div>');
@@ -106,5 +109,7 @@ APP.UI = (function () {
   module.initBallPosition = initBallPosition;
   module.makeShellsClickable = makeShellsClickable;
   module.unassignShellClickHandlers = unassignShellClickHandlers;
+  module.resetGame = resetGame;
+  module.initShellPositions = initShellPositions;
   return module;
 })();

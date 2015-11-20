@@ -42,15 +42,24 @@ APP.STATE_ACTIONS = {
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswaswrong);
   },
 
+  guesswrongagainAction: function () {
+    console.log("guesswrongagain");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswrongagain);
+  },
+
   guesswasrightAction: function () {
     console.log("guesswasright");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
-    $('.ball-container').fadeOut(1000, transitionToNextState);
+    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.guesswasright);
+    $('.ball-container').fadeIn(400);
     $(ACTION_BUTTON_SELECTOR).show();
     APP.UI.unassignShellClickHandlers();
   },
 
-  playagainAction: function () {
+  playagainAction: function (transitionToNextState) {
     console.log("playagain");
+    APP.UI.resetGame();
+    APP.UI.initShellPositions();
+    transitionToNextState();
   }
 };

@@ -11,6 +11,7 @@ APP.UI = (function () {
 
   var shellPositions, // array that will hold the positions of the three shell containers in the grid
     shellContainers, // array that will hold references to the shell container DOM elements
+    ballPositionIndex, // will hold index of the ball position corresponding to the indices in shellPositions & shellContainers
     ballPosition;
 
   // array that holds objects with top and left positions for a 3*3 square grid of shell containers
@@ -33,14 +34,14 @@ APP.UI = (function () {
     initShellPositions();
   };
 
-  function resetGame () {
+  var resetGame = function () {
     $(GAME_CONTAINER_SELECTOR).empty();
     shellContainers = [];
     shellPositions = [];
   }
 
   // adds 3 shell containers at random grid positions and saves the positions
-  function initShellPositions () {
+  initShellPositions = function () {
     for ( var shellNumber = 1; shellNumber <= 3; shellNumber ++ ) {
       // find random position that is not taken yet
       var randomPositionToTest, randomPositionAlreadyTaken;
@@ -69,7 +70,8 @@ APP.UI = (function () {
       var shellNumber = index;
       $(element).addClass('clickable');
       $(element).click(function () {
-        console.log("shell number " + shellNumber + " was clicked");
+        var wasRightGuess = ballPosition
+        APP.STATE_MACHINE.shellContainerClickHandler(ballPositionIndex == index);
       });
     });
   }
@@ -87,7 +89,8 @@ APP.UI = (function () {
     }
     else {
       // choose one of shell grid positions and place the ball at the same position
-      ballPosition = shellPositions[Math.floor(Math.random() * 3)];
+      ballPositionIndex = Math.floor(Math.random() * 3);
+      ballPosition = shellPositions[ballPositionIndex];
       var ballElement = $('<div id="ball-container" class="ball-container"></div');
       ballElement.offset(gridPositions[ballPosition - 1]);
       ballElement.append('<div id="ball" class="ball"></div>');
@@ -106,6 +109,8 @@ APP.UI = (function () {
   module.initBallPosition = initBallPosition;
   module.makeShellsClickable = makeShellsClickable;
   module.unassignShellClickHandlers = unassignShellClickHandlers;
+  module.resetGame = resetGame;
+  module.initShellPositions = initShellPositions;
   return module;
 })();
 ;
@@ -159,16 +164,25 @@ APP.STATE_ACTIONS = {
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswaswrong);
   },
 
+  guesswrongagainAction: function () {
+    console.log("guesswrongagain");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswrongagain);
+  },
+
   guesswasrightAction: function () {
     console.log("guesswasright");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
-    $('.ball-container').fadeOut(1000, transitionToNextState);
+    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.guesswasright);
+    $('.ball-container').fadeIn(400);
     $(ACTION_BUTTON_SELECTOR).show();
     APP.UI.unassignShellClickHandlers();
   },
 
-  playagainAction: function () {
+  playagainAction: function (transitionToNextState) {
     console.log("playagain");
+    APP.UI.resetGame();
+    APP.UI.initShellPositions();
+    transitionToNextState();
   }
 };
 ;
@@ -178,7 +192,7 @@ var APP = APP || {};
 APP.STATE_MACHINE = (function () {
 
   // 'constants'
-  var STATES = ['WELCOME', 'SHOWBALL', 'HIDEBALL', 'SHUFFLE', 'GUESS', 'GUESSWASWRONG', 'GUESSWASRIGHT', 'PLAYAGAIN'];
+  var STATES = ['WELCOME', 'SHOWBALL', 'HIDEBALL', 'SHUFFLE', 'GUESS', 'GUESSWASWRONG', 'GUESSWRONGAGAIN', 'GUESSWASRIGHT', 'PLAYAGAIN'];
 
   var currentState;
 
@@ -189,8 +203,13 @@ APP.STATE_MACHINE = (function () {
 
   function transitionToNextState () {
     var newState;
-    if (currentState == STATES[STATES.length - 1]) {
+    if (currentState == STATES[STATES.length - 1]) { // last state, start with the first one again
       newState = STATES[1];
+    }
+    else if (currentState == 'GUESS') {
+      var errorString = "Cannot automatically transition to next state from state 'GUESS'."
+        + " Transition has to be made explicitely depending on right or wrong guess.";
+      throw new Error(errorString);
     }
     else {
       STATES.forEach(function (state, stateIndex) {
@@ -215,11 +234,25 @@ APP.STATE_MACHINE = (function () {
 
   var actionButtonClickHandler = function () {
     transitionToNextState();
-  }
+  };
+
+  // pass true to this handler if the user made the right guess, false otherwise
+  var shellContainerClickHandler = function (wasRightGuess) {
+    var newState;
+    if (currentState == 'GUESSWASWRONG' && !wasRightGuess) {
+      newState = 'GUESSWRONGAGAIN';
+    }
+    else {
+      newState = wasRightGuess ? 'GUESSWASRIGHT' : 'GUESSWASWRONG'
+    }
+    currentState = newState;
+    callStateAction(newState);
+  };
 	
   var module = {};
   module.init = init;
   module.actionButtonClickHandler = actionButtonClickHandler;
+  module.shellContainerClickHandler = shellContainerClickHandler;
   return module;
 })();
 ;
@@ -230,15 +263,17 @@ APP.TRANSLATIONS = {
   "en": {
     "instructions": {
       "welcome": "Welcome to the Game of Shells!",
-      "showball": "Do you see the red ball? Pay attention where it's hidden!",
+      "showball": "Do you see the red ball? Pay attention to where it's hidden!",
       "shuffle": "Shuffling...",
       "guess": "Can you guess where the ball is?",
       "guesswaswrong": "No, that's not where the ball is...",
-      "guesswasright": "That's right, the ball is here!"
+      "guesswrongagain": "Try again.",
+      "guesswasright": "That's right, the ball is here! Do you want to play again?"
     },
     "buttonlabels": {
       "welcome": "Start the game!",
-      "showball": "Got it, now shuffle!"
+      "showball": "Got it, now shuffle!",
+      "guesswasright": "Yes, let's go!"
     }
   }
 };
