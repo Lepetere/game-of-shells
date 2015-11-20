@@ -9,8 +9,8 @@ APP.UI = (function () {
     GAME_CONTAINER_SELECTOR = '#game-container',
     ACTION_BUTTON_SELECTOR = '.action-button';
 
-  // array that will hold the positions of the three shell containers in the grid
-  var shellPositions = [],
+  var shellPositions, // array that will hold the positions of the three shell containers in the grid
+    shellContainers, // array that will hold references to the shell container DOM elements
     ballPosition;
 
   // array that holds objects with top and left positions for a 3*3 square grid of shell containers
@@ -28,14 +28,19 @@ APP.UI = (function () {
   })();
 
   var init = function () {
+    resetGame();
     initButton();
     initShellPositions();
   };
 
+  function resetGame () {
+    $(GAME_CONTAINER_SELECTOR).empty();
+    shellContainers = [];
+    shellPositions = [];
+  }
+
   // adds 3 shell containers at random grid positions and saves the positions
   function initShellPositions () {
-    $(GAME_CONTAINER_SELECTOR).empty();
-
     for ( var shellNumber = 1; shellNumber <= 3; shellNumber ++ ) {
       // find random position that is not taken yet
       var randomPositionToTest, randomPositionAlreadyTaken;
@@ -53,9 +58,27 @@ APP.UI = (function () {
       shellPositions[shellNumber - 1] = randomPosition;
 
       var shellElement = $('<div id="shell-' + shellNumber + '" class="shell"></div>');
+      shellContainers.push(shellElement);
       $(shellElement).offset(gridPositions[shellPositions[shellNumber - 1] - 1]);
       $(GAME_CONTAINER_SELECTOR).append(shellElement);
     }
+  }
+
+  var makeShellsClickable = function () {
+    shellContainers.forEach(function (element, index) {
+      var shellNumber = index;
+      $(element).addClass('clickable');
+      $(element).click(function () {
+        console.log("shell number " + shellNumber + " was clicked");
+      });
+    });
+  }
+
+  var unassignShellClickHandlers = function () {
+    shellContainers.forEach(function (element, index) {
+      $(element).removeClass('clickable');
+      $(element).off("click");
+    });
   }
 
   var initBallPosition = function () {
@@ -81,6 +104,8 @@ APP.UI = (function () {
   var module = {};
   module.init = init;
   module.initBallPosition = initBallPosition;
+  module.makeShellsClickable = makeShellsClickable;
+  module.unassignShellClickHandlers = unassignShellClickHandlers;
   return module;
 })();
 ;
@@ -117,23 +142,29 @@ APP.STATE_ACTIONS = {
     $('.ball-container').fadeOut(1000, transitionToNextState);
   },
 
-  shuffleAction: function () {
+  shuffleAction: function (transitionToNextState) {
     console.log("shuffle");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
+    window.setTimeout(transitionToNextState, 2000);
   },
 
   guessAction: function () {
     console.log("guess");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guess);
+    APP.UI.makeShellsClickable();
   },
 
   guesswaswrongAction: function () {
     console.log("guesswaswrong");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswaswrong);
   },
 
   guesswasrightAction: function () {
-    $(ACTION_BUTTON_SELECTOR).show();
     console.log("guesswasright");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
+    $('.ball-container').fadeOut(1000, transitionToNextState);
+    $(ACTION_BUTTON_SELECTOR).show();
+    APP.UI.unassignShellClickHandlers();
   },
 
   playagainAction: function () {
@@ -201,7 +232,9 @@ APP.TRANSLATIONS = {
       "welcome": "Welcome to the Game of Shells!",
       "showball": "Do you see the red ball? Pay attention where it's hidden!",
       "shuffle": "Shuffling...",
-      "guess": "Can you guess where the ball is?"
+      "guess": "Can you guess where the ball is?",
+      "guesswaswrong": "No, that's not where the ball is...",
+      "guesswasright": "That's right, the ball is here!"
     },
     "buttonlabels": {
       "welcome": "Start the game!",

@@ -25,23 +25,29 @@ APP.STATE_ACTIONS = {
     $('.ball-container').fadeOut(1000, transitionToNextState);
   },
 
-  shuffleAction: function () {
+  shuffleAction: function (transitionToNextState) {
     console.log("shuffle");
     $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
+    window.setTimeout(transitionToNextState, 2000);
   },
 
   guessAction: function () {
     console.log("guess");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guess);
+    APP.UI.makeShellsClickable();
   },
 
   guesswaswrongAction: function () {
     console.log("guesswaswrong");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswaswrong);
   },
 
   guesswasrightAction: function () {
-    $(ACTION_BUTTON_SELECTOR).show();
     console.log("guesswasright");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
+    $('.ball-container').fadeOut(1000, transitionToNextState);
+    $(ACTION_BUTTON_SELECTOR).show();
+    APP.UI.unassignShellClickHandlers();
   },
 
   playagainAction: function () {
