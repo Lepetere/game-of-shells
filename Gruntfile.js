@@ -5,12 +5,12 @@ module.exports = function(grunt) {
     pkg: grunt.file.readJSON('package.json'),
 
     concat: {
-      options: {
-        separator: ';\n\n',
-      },
       js: {
         src: 'js/app/*.js',
-        dest: 'js/app.js'
+        dest: 'js/app.js',
+        options: {
+          separator: ';\n\n',
+        },
       },
       css: {
         src: 'css/app/*.css',

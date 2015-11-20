@@ -1,11 +1,9 @@
 /* ---- display rules ---- */
 
 .shell {
-  display: inline-block;
-  float: left;
+  position: absolute;
   width: 150px;
   height: 150px;
-  margin-left: 10px;
   background: blue;
 }
 

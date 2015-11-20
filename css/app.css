@@ -4,7 +4,6 @@ html {
   padding: 0px;
   margin: 0px;
   font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, sans-serif;
-  text-align: center;
   height: 100%;
   width: 100%;
 }
@@ -16,16 +15,13 @@ body {
   height: 100%;
   width: 100%;
 }
-;
 
 /* ---- display rules ---- */
 
 .shell {
-  display: inline-block;
-  float: left;
+  position: absolute;
   width: 150px;
   height: 150px;
-  margin-left: 10px;
   background: blue;
 }
 
@@ -44,7 +40,6 @@ body {
   -moz-border-radius: 60px;
   border-radius: 60px;
 }
-;
 
 /* ---- layout rules ---- */
 
@@ -59,15 +54,18 @@ body {
 }
 
 #game-container {
-  height: 400px;
-  margin-top: 20px;
-  margin-bottom: 20px;
+  display: inline-block;
+  /* the dimensions have to allow 3 times the .shell div to fit in plus a margin of 10px on all sides around them */
+  height: 490px; /* 3*150px + 4*10px */
+  width: 490px; /* 3*150px + 4*10px */
+  margin: 20px 155px;
+  position: relative;
 }
 
 #instruction-container {
   clear: left;
+  text-align: center;
 }
-;
 
 /* ---- state rules ---- */
 

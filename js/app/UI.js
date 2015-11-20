@@ -62,8 +62,3 @@ APP.UI = (function () {
   module.init = init;
   return module;
 })();
-;
-
-$(document).ready(function () {
-  APP.UI.init();
-});
