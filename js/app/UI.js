@@ -6,7 +6,8 @@ APP.UI = (function () {
   var SHELL_WIDTH = 150,
     SHELL_HEIGHT = 150,
     SHELL_MARGIN = 10,
-    GAME_CONTAINER_SELECTOR = '#game-container';
+    GAME_CONTAINER_SELECTOR = '#game-container',
+    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text';
 
   // array that will hold the positions of the three shell containers in the grid
   var shellPositions = [],
@@ -27,6 +28,7 @@ APP.UI = (function () {
   })();
 
   var init = function () {
+    initInstructions();
     initShellPositions();
     initBallPosition();
   };
@@ -74,7 +76,9 @@ APP.UI = (function () {
   }
 	
   function initInstructions () {
-    $('.instruction-text').append("Welcome to the Game of Shells!");
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).append(APP.TRANSLATIONS.en.instructions.welcome);
+    var button = $('<button class="action-button">' + APP.TRANSLATIONS.en.buttonlabels.welcome + '</button>');
+    $(INSTRUCTIONS_CONTAINER_SELECTOR).append(button);
   };
 	
   var module = {};

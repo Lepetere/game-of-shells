@@ -23,3 +23,9 @@
   clear: left;
   text-align: center;
 }
+
+.action-button {
+  position: relative;
+  top: -2px;
+  margin-left: 14px;
+}
