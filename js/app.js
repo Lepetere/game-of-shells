@@ -10,6 +10,7 @@ APP.UI = (function () {
     ACTION_BUTTON_SELECTOR = '.action-button',
     INCREASE_SPEED_CONTROL_SELECTOR = '#increase-speed-control',
     DECREASE_SPEED_CONTROL_SELECTOR = '#decrease-speed-control',
+    CURRENT_SPEED_DISPLAY_SELECTOR = '#current-speed',
     SWITCH_LANGUAGE_TO_ENGLISH_SELECTOR = '#switch-language-to-english',
     SWITCH_LANGUAGE_TO_GERMAN_SELECTOR = '#switch-language-to-german';
 
@@ -45,6 +46,10 @@ APP.UI = (function () {
     $(GAME_CONTAINER_SELECTOR).empty();
     shellContainers = [];
     shellPositions = [];
+  };
+
+  var displayCurrentSpeed = function (speedValue) {
+    $(CURRENT_SPEED_DISPLAY_SELECTOR).empty().append(' (' + speedValue + ')');
   };
 
   // adds 3 shell containers at random grid positions and saves the positions
@@ -170,6 +175,7 @@ APP.UI = (function () {
   module.resetGame = resetGame;
   module.initShellPositions = initShellPositions;
   module.shuffleShellPositions = shuffleShellPositions;
+  module.displayCurrentSpeed = displayCurrentSpeed;
   return module;
 })();
 ;
@@ -200,6 +206,7 @@ APP.GAME_VARIABLES = (function () {
     }
 
     console.log(logMessage);
+    APP.UI.displayCurrentSpeed(numberOfShuffles);
   };
 
   var decreaseSpeed = function () {
@@ -217,6 +224,7 @@ APP.GAME_VARIABLES = (function () {
     }
     
     console.log(logMessage);
+    APP.UI.displayCurrentSpeed(numberOfShuffles);
   };
 
   var getShuffleAnimationDuration = function () {

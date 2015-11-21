@@ -24,6 +24,7 @@ APP.GAME_VARIABLES = (function () {
     }
 
     console.log(logMessage);
+    APP.UI.displayCurrentSpeed(numberOfShuffles);
   };
 
   var decreaseSpeed = function () {
@@ -41,6 +42,7 @@ APP.GAME_VARIABLES = (function () {
     }
     
     console.log(logMessage);
+    APP.UI.displayCurrentSpeed(numberOfShuffles);
   };
 
   var getShuffleAnimationDuration = function () {
