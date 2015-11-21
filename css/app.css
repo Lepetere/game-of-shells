@@ -41,6 +41,12 @@ body {
   border-radius: 60px;
 }
 
+.game-control {
+  font-size: 0.8em;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 /* ---- layout rules ---- */
 
 #main-container {
@@ -69,6 +75,12 @@ body {
 
 .action-button {
   cursor: pointer;
+}
+
+#speed-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
 }
 
 /* ---- state rules ---- */

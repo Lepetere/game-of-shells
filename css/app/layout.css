@@ -27,3 +27,9 @@
 .action-button {
   cursor: pointer;
 }
+
+#speed-controls {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+}

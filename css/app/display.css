@@ -22,3 +22,9 @@
   -moz-border-radius: 60px;
   border-radius: 60px;
 }
+
+.game-control {
+  font-size: 0.8em;
+  font-weight: bold;
+  cursor: pointer;
+}

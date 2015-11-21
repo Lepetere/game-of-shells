@@ -8,8 +8,8 @@ APP.UI = (function () {
     SHELL_MARGIN = 10,
     GAME_CONTAINER_SELECTOR = '#game-container',
     ACTION_BUTTON_SELECTOR = '.action-button',
-    SHUFFLE_ANIMATION_DURATION = 250,
-    NUMBER_OF_SHUFFLES = 8;
+    INCREASE_SPEED_CONTROL_SELECTOR = '#increase-speed-control',
+    DECREASE_SPEED_CONTROL_SELECTOR = '#decrease-speed-control';
 
   var shellPositions, // array that will hold the positions of the three shell containers in the grid
     shellContainers, // array that will hold references to the shell container DOM elements
@@ -33,7 +33,8 @@ APP.UI = (function () {
 
   var init = function () {
     resetGame();
-    initButton();
+    initActionButton();
+    initSpeedControls();
     initShellPositions();
   };
 
@@ -69,6 +70,9 @@ APP.UI = (function () {
   }
 
   var shuffleShellPositions = function (transitionToNextState) {
+    var numberOfShuffles = APP.GAME_VARIABLES.getNumberOfShuffles(),
+      shuffleAnimationDuration = APP.GAME_VARIABLES.getShuffleAnimationDuration();
+
     (function shuffleOnce (transitionToNextState, counter) {
       shellPositions.forEach(function (shellPosition, shellPositionIndex) {
         var newPositionIndex, newPosition;
@@ -85,10 +89,10 @@ APP.UI = (function () {
 
         shellPositions[shellPositionIndex] = newPosition;
         $(shellContainers[shellPositionIndex]).animate(newPosition, {
-          duration: SHUFFLE_ANIMATION_DURATION,
+          duration: shuffleAnimationDuration,
           complete: function () {
             // shellPositionIndex == 0 to make sure the callback gets only executed once for every shuffle round
-            if (counter == NUMBER_OF_SHUFFLES && shellPositionIndex == 0) {
+            if (counter == numberOfShuffles && shellPositionIndex == 0) {
               transitionToNextState();
             }
             else if (shellPositionIndex == 0) {
@@ -98,7 +102,7 @@ APP.UI = (function () {
         });
         // also shift ball to new position
         if (shellPositionIndex == ballPositionIndex) {
-          $(ballElement).animate(newPosition, SHUFFLE_ANIMATION_DURATION);
+          $(ballElement).animate(newPosition, shuffleAnimationDuration);
         }
       });
     })(transitionToNextState, 1);
@@ -140,8 +144,13 @@ APP.UI = (function () {
     }
   };
 	
-  function initButton () {
+  function initActionButton () {
     $(ACTION_BUTTON_SELECTOR).click(APP.STATE_MACHINE.actionButtonClickHandler);
+  }
+
+  function initSpeedControls () {
+    $(INCREASE_SPEED_CONTROL_SELECTOR).append("increase speed").click(APP.GAME_VARIABLES.increaseSpeed);
+    $(DECREASE_SPEED_CONTROL_SELECTOR).append("decrease speed").click(APP.GAME_VARIABLES.decreaseSpeed);
   }
 	
   var module = {};
@@ -152,6 +161,78 @@ APP.UI = (function () {
   module.resetGame = resetGame;
   module.initShellPositions = initShellPositions;
   module.shuffleShellPositions = shuffleShellPositions;
+  return module;
+})();
+;
+
+var APP = APP || {};
+
+APP.GAME_VARIABLES = (function () {
+
+  // 'constants'
+  var SHUFFLE_ANIMATION_DURATION_INCREMENT = 50;
+
+  // set defaults
+  var shuffleAnimationDuration = 250,
+    numberOfShuffles = 8;
+
+  var increaseSpeed = function () {
+    var logMessage;
+
+    if (shuffleAnimationDuration <= 50) {
+      logMessage = "cannot increase speed any further";
+    }
+    else {
+      shuffleAnimationDuration = shuffleAnimationDuration - SHUFFLE_ANIMATION_DURATION_INCREMENT;
+      numberOfShuffles = numberOfShuffles + 1;
+
+      logMessage = "shuffleAnimationDuration decreased to " + shuffleAnimationDuration
+      + " and numberOfShuffles increased to " + numberOfShuffles;
+    }
+
+    console.log(logMessage);
+  };
+
+  var decreaseSpeed = function () {
+    var logMessage;
+
+    if (numberOfShuffles == 1) {
+      logMessage = "cannot decrease speed any further";
+    }
+    else {
+      shuffleAnimationDuration = shuffleAnimationDuration + SHUFFLE_ANIMATION_DURATION_INCREMENT;
+      numberOfShuffles = numberOfShuffles - 1;
+
+      logMessage = "shuffleAnimationDuration increased to " + shuffleAnimationDuration
+        + " and numberOfShuffles decreased to " + numberOfShuffles;
+    }
+    
+    console.log(logMessage);
+  };
+
+  var getShuffleAnimationDuration = function () {
+    if (! typeof shuffleAnimationDuration == "number") {
+      throw new Error("shuffleAnimationDuration is not a number");
+    }
+    else {
+      return shuffleAnimationDuration;
+    }
+  };
+
+  var getNumberOfShuffles = function () {
+    if (! typeof numberOfShuffles == "number") {
+      throw new Error("numberOfShuffles is not a number");
+    }
+    else {
+      return numberOfShuffles;
+    }
+  };
+
+  var module = {};
+  module.increaseSpeed = increaseSpeed;
+  module.decreaseSpeed = decreaseSpeed;
+  module.getShuffleAnimationDuration = getShuffleAnimationDuration;
+  module.getNumberOfShuffles = getNumberOfShuffles;
   return module;
 })();
 ;
