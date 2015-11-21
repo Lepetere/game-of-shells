@@ -28,6 +28,12 @@
   cursor: pointer;
 }
 
+#language-controls {
+  position: absolute;
+  top: 20px;
+  left: 20px;
+}
+
 #speed-controls {
   position: absolute;
   top: 20px;

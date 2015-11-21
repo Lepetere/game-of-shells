@@ -15,6 +15,30 @@ APP.TRANSLATIONS = {
       "welcome": "Start the game!",
       "showball": "Got it, now shuffle!",
       "guesswasright": "Yes, let's go!"
+    },
+    "controls": {
+      "increasespeed": "increase speed",
+      "decreasespeed": "decrease speed"
+    }
+  },
+  "de": {
+    "instructions": {
+      "welcome": "Wilkommen beim Hütchenspiel!",
+      "showball": "Siehst du den roten Ball? Merk dir genau, wo er ist!",
+      "shuffle": "Mischen...",
+      "guess": "Weißt du noch, wo der Ball ist?",
+      "guesswaswrong": "Nein, leider nicht hier...",
+      "guesswrongagain": "Versuch es noch einmal.",
+      "guesswasright": "Ja genau, hier ist er! Möchtest du noch einmal spielen?"
+    },
+    "buttonlabels": {
+      "welcome": "Leg los!",
+      "showball": "Alles klar, ich bin bereit!",
+      "guesswasright": "Nächste Runde"
+    },
+    "controls": {
+      "increasespeed": "schneller mischen",
+      "decreasespeed": "langsamer mischen"
     }
   }
 };

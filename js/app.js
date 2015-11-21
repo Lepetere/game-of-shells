@@ -9,7 +9,9 @@ APP.UI = (function () {
     GAME_CONTAINER_SELECTOR = '#game-container',
     ACTION_BUTTON_SELECTOR = '.action-button',
     INCREASE_SPEED_CONTROL_SELECTOR = '#increase-speed-control',
-    DECREASE_SPEED_CONTROL_SELECTOR = '#decrease-speed-control';
+    DECREASE_SPEED_CONTROL_SELECTOR = '#decrease-speed-control',
+    SWITCH_LANGUAGE_TO_ENGLISH_SELECTOR = '#switch-language-to-english',
+    SWITCH_LANGUAGE_TO_GERMAN_SELECTOR = '#switch-language-to-german';
 
   var shellPositions, // array that will hold the positions of the three shell containers in the grid
     shellContainers, // array that will hold references to the shell container DOM elements
@@ -35,6 +37,7 @@ APP.UI = (function () {
     resetGame();
     initActionButton();
     initSpeedControls();
+    initLanguageControls();
     initShellPositions();
   };
 
@@ -149,8 +152,14 @@ APP.UI = (function () {
   }
 
   function initSpeedControls () {
-    $(INCREASE_SPEED_CONTROL_SELECTOR).append("increase speed").click(APP.GAME_VARIABLES.increaseSpeed);
-    $(DECREASE_SPEED_CONTROL_SELECTOR).append("decrease speed").click(APP.GAME_VARIABLES.decreaseSpeed);
+    $(INCREASE_SPEED_CONTROL_SELECTOR).click(APP.GAME_VARIABLES.increaseSpeed);
+    $(DECREASE_SPEED_CONTROL_SELECTOR).click(APP.GAME_VARIABLES.decreaseSpeed);
+  }
+
+  function initLanguageControls () {
+    APP.TRANSLATE.translateSpeedControls();
+    $(SWITCH_LANGUAGE_TO_ENGLISH_SELECTOR).append("EN").click(APP.TRANSLATE.switchLanguageToEnglish);
+    $(SWITCH_LANGUAGE_TO_GERMAN_SELECTOR).append("DE").click(APP.TRANSLATE.switchLanguageToGerman);
   }
 	
   var module = {};
@@ -254,51 +263,50 @@ var ACTION_BUTTON_SELECTOR = '.action-button',
 APP.STATE_ACTIONS = {
   welcomeAction: function () {
     console.log("welcome");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.welcome);
-    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.welcome);
+    APP.TRANSLATE.translateInstruction();
+    APP.TRANSLATE.translateActionButton();
   },
 
   showballAction: function () {
     console.log("showball");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.showball);
-    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.showball);
+    APP.TRANSLATE.translateInstruction();
+    APP.TRANSLATE.translateActionButton();
     APP.UI.initBallPosition();
     $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
   },
 
   hideballAction: function (transitionToNextState) {
     console.log("hideball");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty();
     $(ACTION_BUTTON_SELECTOR).hide();
     $(BALL_CONTAINER_SELECTOR).fadeOut(BALL_HIDE_DURATION, transitionToNextState);
   },
 
   shuffleAction: function (transitionToNextState) {
     console.log("shuffle");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
+    APP.TRANSLATE.translateInstruction();
     APP.UI.shuffleShellPositions(transitionToNextState);
   },
 
   guessAction: function () {
     console.log("guess");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guess);
+    APP.TRANSLATE.translateInstruction();
     APP.UI.makeShellsClickable();
   },
 
   guesswaswrongAction: function () {
     console.log("guesswaswrong");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswaswrong);
+    APP.TRANSLATE.translateInstruction();
   },
 
   guesswrongagainAction: function () {
     console.log("guesswrongagain");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswrongagain);
+    APP.TRANSLATE.translateInstruction();
   },
 
   guesswasrightAction: function () {
     console.log("guesswasright");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
-    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.guesswasright);
+    APP.TRANSLATE.translateInstruction();
+    APP.TRANSLATE.translateActionButton();
     $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
     $(ACTION_BUTTON_SELECTOR).show();
     APP.UI.unassignShellClickHandlers();
@@ -374,11 +382,87 @@ APP.STATE_MACHINE = (function () {
     currentState = newState;
     callStateAction(newState);
   };
+
+  var getCurrentState = function () {
+    return currentState;
+  };
 	
   var module = {};
   module.init = init;
   module.actionButtonClickHandler = actionButtonClickHandler;
   module.shellContainerClickHandler = shellContainerClickHandler;
+  module.getCurrentState = getCurrentState;
+  return module;
+})();
+;
+
+var APP = APP || {};
+
+APP.TRANSLATE = (function () {
+
+  // default language is english
+  var currentLanguage = 'en';
+
+  // 'constants'
+  var ACTION_BUTTON_SELECTOR = '.action-button',
+    INSTRUCTIONS_CONTAINER_SELECTOR = '.instruction-text',
+    INCREASE_SPEED_CONTROL_SELECTOR = '#increase-speed-control',
+    DECREASE_SPEED_CONTROL_SELECTOR = '#decrease-speed-control';
+
+  var switchLanguageToEnglish = function () {
+    switchLanguage("en");
+  };
+
+  var switchLanguageToGerman = function () {
+    switchLanguage("de");
+  };
+
+  var translateInstruction = function () {
+    var lookupCode = APP.STATE_MACHINE.getCurrentState().toLowerCase(),
+      translation = APP.TRANSLATIONS[currentLanguage].instructions[lookupCode];
+
+    if (translation) {
+      $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(translation);
+    }
+    else {
+      console.log("no instruction translation found for state " + lookupCode);
+    }
+  };
+
+  var translateActionButton = function () {
+    var lookupCode = APP.STATE_MACHINE.getCurrentState().toLowerCase(),
+      translation = APP.TRANSLATIONS[currentLanguage].buttonlabels[lookupCode];
+
+    if (translation) {
+      $(ACTION_BUTTON_SELECTOR).empty().append(translation);
+    }
+    else {
+      console.log("no button translation found for state " + lookupCode);
+    }
+  };
+
+  var translateSpeedControls = function () {
+    var translationIncrease = APP.TRANSLATIONS[currentLanguage].controls.increasespeed,
+      translationDecrease = APP.TRANSLATIONS[currentLanguage].controls.decreasespeed;
+    
+    $(INCREASE_SPEED_CONTROL_SELECTOR).empty().append(translationIncrease);
+    $(DECREASE_SPEED_CONTROL_SELECTOR).empty().append(translationDecrease);
+  };
+
+  function switchLanguage (languageCode) {
+    console.log("switching language to '" + languageCode + "'");
+    currentLanguage = languageCode;
+    translateInstruction();
+    translateActionButton();
+    translateSpeedControls();
+  }
+
+  var module = {};
+  module.switchLanguageToEnglish = switchLanguageToEnglish;
+  module.switchLanguageToGerman = switchLanguageToGerman;
+  module.translateInstruction = translateInstruction;
+  module.translateActionButton = translateActionButton;
+  module.translateSpeedControls = translateSpeedControls;
   return module;
 })();
 ;
@@ -400,6 +484,30 @@ APP.TRANSLATIONS = {
       "welcome": "Start the game!",
       "showball": "Got it, now shuffle!",
       "guesswasright": "Yes, let's go!"
+    },
+    "controls": {
+      "increasespeed": "increase speed",
+      "decreasespeed": "decrease speed"
+    }
+  },
+  "de": {
+    "instructions": {
+      "welcome": "Wilkommen beim Hütchenspiel!",
+      "showball": "Siehst du den roten Ball? Merk dir genau, wo er ist!",
+      "shuffle": "Mischen...",
+      "guess": "Weißt du noch, wo der Ball ist?",
+      "guesswaswrong": "Nein, leider nicht hier...",
+      "guesswrongagain": "Versuch es noch einmal.",
+      "guesswasright": "Ja genau, hier ist er! Möchtest du noch einmal spielen?"
+    },
+    "buttonlabels": {
+      "welcome": "Leg los!",
+      "showball": "Alles klar, ich bin bereit!",
+      "guesswasright": "Nächste Runde"
+    },
+    "controls": {
+      "increasespeed": "schneller mischen",
+      "decreasespeed": "langsamer mischen"
     }
   }
 };

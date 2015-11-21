@@ -10,51 +10,50 @@ var ACTION_BUTTON_SELECTOR = '.action-button',
 APP.STATE_ACTIONS = {
   welcomeAction: function () {
     console.log("welcome");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.welcome);
-    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.welcome);
+    APP.TRANSLATE.translateInstruction();
+    APP.TRANSLATE.translateActionButton();
   },
 
   showballAction: function () {
     console.log("showball");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.showball);
-    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.showball);
+    APP.TRANSLATE.translateInstruction();
+    APP.TRANSLATE.translateActionButton();
     APP.UI.initBallPosition();
     $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
   },
 
   hideballAction: function (transitionToNextState) {
     console.log("hideball");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty();
     $(ACTION_BUTTON_SELECTOR).hide();
     $(BALL_CONTAINER_SELECTOR).fadeOut(BALL_HIDE_DURATION, transitionToNextState);
   },
 
   shuffleAction: function (transitionToNextState) {
     console.log("shuffle");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.shuffle);
+    APP.TRANSLATE.translateInstruction();
     APP.UI.shuffleShellPositions(transitionToNextState);
   },
 
   guessAction: function () {
     console.log("guess");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guess);
+    APP.TRANSLATE.translateInstruction();
     APP.UI.makeShellsClickable();
   },
 
   guesswaswrongAction: function () {
     console.log("guesswaswrong");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswaswrong);
+    APP.TRANSLATE.translateInstruction();
   },
 
   guesswrongagainAction: function () {
     console.log("guesswrongagain");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswrongagain);
+    APP.TRANSLATE.translateInstruction();
   },
 
   guesswasrightAction: function () {
     console.log("guesswasright");
-    $(INSTRUCTIONS_CONTAINER_SELECTOR).empty().append(APP.TRANSLATIONS.en.instructions.guesswasright);
-    $(ACTION_BUTTON_SELECTOR).empty().append(APP.TRANSLATIONS.en.buttonlabels.guesswasright);
+    APP.TRANSLATE.translateInstruction();
+    APP.TRANSLATE.translateActionButton();
     $(BALL_CONTAINER_SELECTOR).fadeIn(BALL_SHOW_DURATION);
     $(ACTION_BUTTON_SELECTOR).show();
     APP.UI.unassignShellClickHandlers();

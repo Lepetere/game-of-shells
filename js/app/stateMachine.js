@@ -59,10 +59,15 @@ APP.STATE_MACHINE = (function () {
     currentState = newState;
     callStateAction(newState);
   };
+
+  var getCurrentState = function () {
+    return currentState;
+  };
 	
   var module = {};
   module.init = init;
   module.actionButtonClickHandler = actionButtonClickHandler;
   module.shellContainerClickHandler = shellContainerClickHandler;
+  module.getCurrentState = getCurrentState;
   return module;
 })();

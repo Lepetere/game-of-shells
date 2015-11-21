@@ -9,7 +9,9 @@ APP.UI = (function () {
     GAME_CONTAINER_SELECTOR = '#game-container',
     ACTION_BUTTON_SELECTOR = '.action-button',
     INCREASE_SPEED_CONTROL_SELECTOR = '#increase-speed-control',
-    DECREASE_SPEED_CONTROL_SELECTOR = '#decrease-speed-control';
+    DECREASE_SPEED_CONTROL_SELECTOR = '#decrease-speed-control',
+    SWITCH_LANGUAGE_TO_ENGLISH_SELECTOR = '#switch-language-to-english',
+    SWITCH_LANGUAGE_TO_GERMAN_SELECTOR = '#switch-language-to-german';
 
   var shellPositions, // array that will hold the positions of the three shell containers in the grid
     shellContainers, // array that will hold references to the shell container DOM elements
@@ -35,6 +37,7 @@ APP.UI = (function () {
     resetGame();
     initActionButton();
     initSpeedControls();
+    initLanguageControls();
     initShellPositions();
   };
 
@@ -149,8 +152,14 @@ APP.UI = (function () {
   }
 
   function initSpeedControls () {
-    $(INCREASE_SPEED_CONTROL_SELECTOR).append("increase speed").click(APP.GAME_VARIABLES.increaseSpeed);
-    $(DECREASE_SPEED_CONTROL_SELECTOR).append("decrease speed").click(APP.GAME_VARIABLES.decreaseSpeed);
+    $(INCREASE_SPEED_CONTROL_SELECTOR).click(APP.GAME_VARIABLES.increaseSpeed);
+    $(DECREASE_SPEED_CONTROL_SELECTOR).click(APP.GAME_VARIABLES.decreaseSpeed);
+  }
+
+  function initLanguageControls () {
+    APP.TRANSLATE.translateSpeedControls();
+    $(SWITCH_LANGUAGE_TO_ENGLISH_SELECTOR).append("EN").click(APP.TRANSLATE.switchLanguageToEnglish);
+    $(SWITCH_LANGUAGE_TO_GERMAN_SELECTOR).append("DE").click(APP.TRANSLATE.switchLanguageToGerman);
   }
 	
   var module = {};
