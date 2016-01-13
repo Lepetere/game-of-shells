@@ -4,7 +4,7 @@ The Game of Shells involves a flat surface, a row of three small containers and 
 
 ###Play
 
-Just go to [game-of-shells.peterfessel.com](http://game-of-shells.peterfessel.com/) for a live demo.
+Just click [here](http://projects.peterfessel.com/game-of-shells) for a live demo.
 
 ###Run locally
 
